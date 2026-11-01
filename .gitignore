@@ -1,0 +1,15 @@
+# 의존성·빌드 결과
+node_modules/
+dist/
+
+# 개인 데이터 — DB(API 키·계정 비밀번호·고객 정보 포함)와 업로드 파일은 절대 올리지 않는다
+data/
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*
+
+# 로컬 도구 설정
+.claude/
+*.log

@@ -1,0 +1,28 @@
+# Render 배포 설정 (Blueprint)
+# https://render.com/deploy?repo=<이 저장소 주소> 로 열면 아래 내용으로 서비스가 만들어진다.
+# - 데이터(DB·업로드 파일)는 영구 디스크(/var/data)에 저장된다. 디스크는 유료 플랜에서만 쓸 수 있다.
+# - APP_PASSWORD(로그인 비밀번호)와 GEMINI_API_KEY는 배포할 때 Render 화면에서 직접 입력한다.
+services:
+  - type: web
+    name: condesk
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node server/index.js
+    healthCheckPath: /api/session
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: APP_PASSWORD
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: condesk-data
+      mountPath: /var/data
+      sizeGB: 1
