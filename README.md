@@ -12,7 +12,20 @@
 - 한글(한컴오피스)이 설치되어 있으면 보고서를 **HWP·PDF**로도 내려받을 수 있습니다.
 - 화면 코드를 고친 뒤에는 `npm run build`, 개발 중에는 `npm run dev`(http://localhost:5173).
 
-## 외부 공개 모드 (무료 · 내 PC + Cloudflare 터널)
+## 고정 주소 모드 (무료 · 내 PC + Tailscale Funnel) ← 추천
+
+항상 같은 주소(`https://<기기이름>.<tailnet>.ts.net`)로 휴대폰·다른 PC에서 접속합니다.
+
+1. Tailscale(https://tailscale.com/download)을 설치하고 로그인합니다.
+2. 처음 한 번 Funnel을 허용합니다: `tailscale funnel 5179`를 실행하면 나오는 링크에서 허용.
+3. `start-funnel.bat`을 더블클릭합니다. 처음 한 번 로그인 비밀번호를 정하고, 창에 고정 접속 주소가 표시됩니다.
+
+참고
+- 이 PC가 켜져 있고 실행 창이 열려 있는 동안 접속됩니다. PC 절전 모드를 꺼 두세요.
+- Funnel이 켜져 있으면 비밀번호 없이는 앱이 시작되지 않습니다(정보 보호).
+- 외부 공개를 완전히 끄려면 `tailscale funnel reset`.
+
+## 외부 공개 모드 (무료 · 내 PC + Cloudflare 임시 터널)
 
 내 PC에서 돌아가는 앱에 인터넷 주소를 붙여 휴대폰·다른 PC에서도 접속합니다. 비용이 없고 HWP·PDF 변환도 그대로 됩니다.
 
