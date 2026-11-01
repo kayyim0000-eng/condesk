@@ -19,7 +19,11 @@ export default function Settings() {
   const [importing, setImporting] = useState(false);
   const [replace, setReplace] = useState(false);
   const [exporting, setExporting] = useState(false);
-  useEffect(() => { api.get('/api/settings').then(setS); }, []);
+  const [publicUrl, setPublicUrl] = useState('');
+  useEffect(() => {
+    api.get('/api/settings').then(setS);
+    api.get('/api/public-url').then((r) => setPublicUrl(r.url)).catch(() => {});
+  }, []);
   if (!s) return null;
   const set = (k) => (e) => setS({ ...s, [k]: e.target.value });
   const engine = s.ai_provider || 'gemini';
@@ -46,6 +50,17 @@ export default function Settings() {
         {msg && <span className="text-sm text-emerald-700 self-center">{msg}</span>}
         <button className="btn-primary" onClick={save}><Save size={16} />저장</button>
       </PageHeader>
+
+      {publicUrl && (
+        <section className="card p-5 mb-4 border-brand-300 bg-brand-50/40">
+          <h2 className="font-semibold">외부 접속 주소 <span className="chip bg-emerald-50 text-emerald-700 ml-1">공개 중</span></h2>
+          <p className="text-sm text-slate-500 mt-1">휴대폰·다른 PC에서 이 주소로 들어와 로그인하면 됩니다. 이 PC와 실행 창이 켜져 있는 동안만 열리고, 다시 실행하면 주소가 바뀝니다.</p>
+          <div className="flex gap-2 mt-3">
+            <input className="input font-mono" readOnly value={publicUrl} onFocus={(e) => e.target.select()} />
+            <button className="btn-outline shrink-0" onClick={() => navigator.clipboard.writeText(publicUrl)}>복사</button>
+          </div>
+        </section>
+      )}
 
       <section className="card p-5 mb-4 space-y-4">
         <h2 className="font-semibold">AI 엔진</h2>

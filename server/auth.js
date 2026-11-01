@@ -1,9 +1,14 @@
 // 비밀번호 로그인 (1인용)
-// - 환경변수 APP_PASSWORD가 있으면 로그인을 요구한다 (클라우드 배포용).
-// - 없으면 로그인 없이 동작한다 (이 PC에서만 접속되는 로컬 실행용).
+// - 환경변수 APP_PASSWORD 또는 data/app_password.txt(외부 공개 실행 때 만들어짐)가 있으면 로그인을 요구한다.
+// - 둘 다 없으면 로그인 없이 동작한다 (이 PC에서만 접속되는 로컬 실행용).
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { DATA_DIR } from './db.js';
 
-const PASSWORD = process.env.APP_PASSWORD || '';
+const PW_FILE = path.join(DATA_DIR, 'app_password.txt');
+const PASSWORD = process.env.APP_PASSWORD
+  || (fs.existsSync(PW_FILE) ? fs.readFileSync(PW_FILE, 'utf8').replace(/^﻿/, '').trim() : '');
 const SECRET = process.env.SESSION_SECRET || PASSWORD;
 const COOKIE = 'condesk_session';
 const MAX_AGE = 30 * 24 * 3600; // 30일

@@ -12,7 +12,20 @@
 - 한글(한컴오피스)이 설치되어 있으면 보고서를 **HWP·PDF**로도 내려받을 수 있습니다.
 - 화면 코드를 고친 뒤에는 `npm run build`, 개발 중에는 `npm run dev`(http://localhost:5173).
 
-## 클라우드 배포 (Render)
+## 외부 공개 모드 (무료 · 내 PC + Cloudflare 터널)
+
+내 PC에서 돌아가는 앱에 인터넷 주소를 붙여 휴대폰·다른 PC에서도 접속합니다. 비용이 없고 HWP·PDF 변환도 그대로 됩니다.
+
+1. `tools/cloudflared.exe`가 필요합니다. 없으면 https://github.com/cloudflare/cloudflared/releases 에서 `cloudflared-windows-amd64.exe`를 받아 `tools/cloudflared.exe`로 저장합니다.
+2. `start-public.bat`을 더블클릭합니다. 처음 한 번 로그인 비밀번호(8자 이상)를 정합니다(`data/app_password.txt`, 바꾸려면 이 파일을 지우고 다시 실행).
+3. 창에 `외부 접속 주소: https://xxxx.trycloudflare.com`이 표시됩니다. 앱 **설정** 화면 맨 위에도 나옵니다.
+
+참고
+- 이 PC가 켜져 있고 실행 창이 열려 있는 동안만 접속됩니다. PC 절전 모드를 꺼 두세요.
+- 주소는 실행할 때마다 바뀝니다.
+- 비밀번호 파일이 생긴 뒤에는 `start.bat`으로 실행해도 로그인 화면이 나옵니다.
+
+## 클라우드 배포 (Render, 유료)
 
 1. Render(https://render.com)에 GitHub 계정으로 가입합니다.
 2. `https://render.com/deploy?repo=<이 저장소 주소>` 를 열면 `render.yaml` 설정으로 서비스가 만들어집니다.
