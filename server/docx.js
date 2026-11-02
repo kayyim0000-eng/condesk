@@ -1,5 +1,4 @@
 // 양식 정의(layout)와 작성된 칸 값으로 Word(.docx) 문서를 만든다. 한글(HWP)에서도 열린다.
-import fs from 'node:fs';
 import {
   AlignmentType, BorderStyle, Document, HeightRule, ImageRun, Packer, Paragraph, ShadingType, Table, TableCell,
   TableRow, TextRun, VerticalAlign, WidthType,
@@ -90,8 +89,7 @@ function imageSize(buf) {
   }
   return { w: 4, h: 3 };
 }
-function imageRun(file, maxW, maxH) {
-  const data = fs.readFileSync(file);
+function imageRun(data, maxW, maxH) {
   const { w, h } = imageSize(data);
   const scale = Math.min(maxW / w, maxH / h);
   return new ImageRun({ type: imageType(data), data, transformation: { width: Math.round(w * scale), height: Math.round(h * scale) } });
@@ -111,7 +109,7 @@ function photos(block, imgs = []) {
       height: { value: 3200, rule: HeightRule.ATLEAST },
       children: line.map((c) => new TableCell({
         borders, width: { size: w, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
-        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: c.img ? [imageRun(c.img.path, pxW, 210)] : [] })],
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: c.img ? [imageRun(c.img.buf, pxW, 210)] : [] })],
       })),
     }));
     rows.push(new TableRow({ children: line.map((c) => new TableCell({ borders, width: { size: w, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, color: 'auto', fill: 'E8EDF3' }, children: paras(c.label, { bold: true, align: AlignmentType.CENTER }) })) }));

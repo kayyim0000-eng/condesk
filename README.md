@@ -12,7 +12,26 @@
 - 한글(한컴오피스)이 설치되어 있으면 보고서를 **HWP·PDF**로도 내려받을 수 있습니다.
 - 화면 코드를 고친 뒤에는 `npm run build`, 개발 중에는 `npm run dev`(http://localhost:5173).
 
-## 고정 주소 모드 (무료 · 내 PC + Tailscale Funnel) ← 추천
+## Vercel + Supabase 배포 (PC 없이 항상 접속)
+
+화면과 API는 Vercel, 데이터(DB)와 업로드 파일은 Supabase에 저장합니다. `api/index.js`가 `server/app.js`(Express)를 Vercel Function으로 실행합니다.
+
+Vercel 프로젝트 → Settings → Environment Variables 에 아래를 넣고 다시 배포합니다.
+
+| 이름 | 값 |
+|---|---|
+| `APP_PASSWORD` | 로그인 비밀번호 (필수) |
+| `DATABASE_URL` | Supabase → Connect → **Transaction pooler** 연결 문자열 (포트 6543, `[YOUR-PASSWORD]`를 DB 비밀번호로 바꿈) |
+| `SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API Keys → `service_role` (비밀 키) |
+| `GEMINI_API_KEY` | (선택) 앱 설정 화면에서 넣어도 됨 |
+
+- 테이블과 비공개 Storage 버킷(`uploads`)은 첫 접속 때 자동으로 만들어집니다.
+- Vercel에서는 HWP/PDF 변환이 안 되어 보고서는 Word(.docx)로 받습니다.
+- Vercel 요청 크기 제한(약 4.5MB) 때문에 큰 녹음 파일은 올릴 수 없습니다.
+- `DATABASE_URL`이 없으면 이 PC의 SQLite(`data/app.db`)를 씁니다(로컬 실행).
+
+## 고정 주소 모드 (무료 · 내 PC + Tailscale Funnel)
 
 항상 같은 주소(`https://<기기이름>.<tailnet>.ts.net`)로 휴대폰·다른 PC에서 접속합니다.
 

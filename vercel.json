@@ -4,8 +4,11 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/index.js": { "maxDuration": 300, "memory": 1024 }
+  },
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://condesk.tail4ea111.ts.net/api/:path*" },
+    { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

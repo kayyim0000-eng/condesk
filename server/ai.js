@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenAI } from '@google/genai';
-import fs from 'node:fs';
 import { getSetting } from './db.js';
 import { PARTS, interpolate, BUILTIN_TEMPLATES } from './templates.js';
 
@@ -187,9 +186,9 @@ function reportSchema(tpl) {
 function sourceBlocks(sources) {
   const blocks = [];
   sources.forEach((s, i) => {
-    if (s.type === 'pdf' && s.path && fs.existsSync(s.path)) {
+    if (s.type === 'pdf' && s.buf) {
       blocks.push({ type: 'text', text: `<원자료 ${i + 1} 종류="첨부 PDF" 이름="${s.name}">` });
-      blocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fs.readFileSync(s.path).toString('base64') } });
+      blocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: s.buf.toString('base64') } });
       blocks.push({ type: 'text', text: '</원자료>' });
     } else if (s.text?.trim()) {
       const label = { text: '컨설턴트 메모', zoom: '줌 회의 노트', audio: '음성 녹취록', doc: '첨부 문서' }[s.type] || s.type;
@@ -289,7 +288,7 @@ function cleanTemplate(t) {
   };
 }
 
-export async function analyzeTemplate({ text, pdfPath, fileName }) {
+export async function analyzeTemplate({ text, pdfBuf, fileName }) {
   const example = BUILTIN_TEMPLATES.find((t) => t.id === 'gangnam_hub');
   const content = [
     { type: 'text', text: `아래는 한 기관의 컨설팅(멘토링) 보고서 빈 양식입니다. 파일명: ${fileName}\n이 양식을 앱에서 쓸 양식 정의 JSON으로 바꿔 주세요.
@@ -308,7 +307,7 @@ export async function analyzeTemplate({ text, pdfPath, fileName }) {
 참고 예시(다른 기관 양식을 변환한 결과):
 ${JSON.stringify(example)}` },
   ];
-  if (pdfPath) content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fs.readFileSync(pdfPath).toString('base64') } });
+  if (pdfBuf) content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBuf.toString('base64') } });
   else content.push({ type: 'text', text: `<양식 원문>\n${text}\n</양식 원문>` });
   const t = await callJson({ system: '당신은 한국 공공기관 보고서 양식을 구조화하는 도우미입니다.', content, schema: TEMPLATE_SCHEMA, effort: 'high' });
   return cleanTemplate(t);

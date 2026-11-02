@@ -3,7 +3,7 @@
 import ExcelJS from 'exceljs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { db } from './db.js';
+import { run, exec, ready } from './db.js';
 import { TABLES } from './schema.js';
 
 function val(cell) {
@@ -75,18 +75,21 @@ function rowsAfter(ws, header, stopWord = '합') {
   return out;
 }
 
-function insert(table, rec) {
+async function insert(table, rec) {
   const cols = TABLES[table].columns.map((c) => c.key).filter((k) => rec[k] !== undefined && rec[k] !== null && rec[k] !== '');
   if (!cols.length) return;
-  db.prepare(`INSERT INTO ${table} (${cols.join(',')}) VALUES (${cols.map(() => '?').join(',')})`).run(...cols.map((k) => rec[k]));
+  await run(`INSERT INTO ${table} (${cols.join(',')}) VALUES (${cols.map(() => '?').join(',')})`, ...cols.map((k) => (rec[k] instanceof Date ? rec[k].toISOString().slice(0, 10) : rec[k])));
 }
 
 export async function importWorkbook(file, { replace = false } = {}) {
+  await ready();
   const wb = new ExcelJS.Workbook();
   if (Buffer.isBuffer(file)) await wb.xlsx.load(file); else await wb.xlsx.readFile(file);
   const counts = {};
-  const add = (t, rec) => { insert(t, rec); counts[t] = (counts[t] || 0) + 1; };
-  if (replace) for (const t of Object.keys(TABLES)) db.exec(`DELETE FROM ${t}`);
+  // 시트를 다 읽은 뒤 한꺼번에 저장한다
+  const pending = [];
+  const add = (t, rec) => { pending.push([t, rec]); counts[t] = (counts[t] || 0) + 1; };
+  if (replace) for (const t of Object.keys(TABLES)) await exec(`DELETE FROM ${t}`);
 
   for (const ws of wb.worksheets) {
     const name = ws.name;
@@ -157,6 +160,7 @@ export async function importWorkbook(file, { replace = false } = {}) {
       }
     }
   }
+  for (const [t, rec] of pending) await insert(t, rec);
   return counts;
 }
 
