@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { DATA_DIR } from './db.js';
 
-const SB_URL = process.env.SUPABASE_URL;
+const SB_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BUCKET = process.env.SUPABASE_BUCKET || 'uploads';
 export const REMOTE_STORAGE = Boolean(SB_URL && SB_KEY);

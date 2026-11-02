@@ -10,7 +10,9 @@ import { TABLES, sqlType } from './schema.js';
 import { BUILTIN_TEMPLATES } from './templates.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-export const IS_PG = Boolean(process.env.DATABASE_URL);
+// Vercel의 Supabase 연결(Storage → Supabase)을 쓰면 POSTGRES_URL 이 자동으로 들어온다
+const DB_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
+export const IS_PG = Boolean(DB_URL);
 // DATA_DIR 환경변수로 저장 위치를 바꿀 수 있다. Vercel은 /tmp 만 쓸 수 있다.
 export const DATA_DIR = process.env.DATA_DIR || (process.env.VERCEL ? path.join(os.tmpdir(), 'condesk') : path.join(here, '..', 'data'));
 fs.mkdirSync(path.join(DATA_DIR, 'uploads'), { recursive: true });
@@ -30,7 +32,7 @@ async function conn() {
       pg.types.setTypeParser(20, (v) => Number(v));
       pg.types.setTypeParser(1700, (v) => Number(v));
       // Supabase는 SSL 필수, 내 PC의 시험용 Postgres(localhost)는 SSL 없음
-      const url = process.env.DATABASE_URL;
+      const url = DB_URL;
       const ssl = /localhost|127\.0\.0\.1|sslmode=disable/.test(url) ? false : { rejectUnauthorized: false };
       pool = new pg.Pool({ connectionString: url.replace(/[?&]sslmode=[^&]*/, ''), ssl, max: 3 });
     }

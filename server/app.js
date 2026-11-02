@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { all, get, run, exec, ready, loadSettings, getSetting, setSetting, nowStr } from './db.js';
+import { all, get, run, exec, ready, loadSettings, getSetting, setSetting, nowStr, IS_PG } from './db.js';
 import { putFile, getFile } from './storage.js';
 import { TABLES, CATEGORIES, CERT_CATEGORIES } from './schema.js';
 import { PARTS, interpolate } from './templates.js';
@@ -28,6 +28,10 @@ app.use(express.json({ limit: '20mb' }));
 // Vercel에서는 로그인 비밀번호(APP_PASSWORD) 없이는 아무것도 열지 않는다
 if (ON_VERCEL && !authEnabled()) {
   app.use('/api', (req, res) => res.status(503).json({ error: 'Vercel 환경변수 APP_PASSWORD(로그인 비밀번호)를 설정해 주세요.' }));
+}
+// Vercel의 디스크는 임시라서 DB(Supabase) 연결 없이는 저장하지 않는다
+if (ON_VERCEL && !IS_PG) {
+  app.use('/api', (req, res) => res.status(503).json({ error: 'Supabase 데이터베이스가 연결되지 않았습니다. Vercel 환경변수 DATABASE_URL(또는 Supabase 연결)을 설정해 주세요.' }));
 }
 mountAuth(app);
 // 로그인을 통과한 요청마다: 테이블 준비(처음 한 번) + 설정 읽기

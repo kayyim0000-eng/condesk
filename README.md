@@ -16,7 +16,9 @@
 
 화면과 API는 Vercel, 데이터(DB)와 업로드 파일은 Supabase에 저장합니다. `api/index.js`가 `server/app.js`(Express)를 Vercel Function으로 실행합니다.
 
-Vercel 프로젝트 → Settings → Environment Variables 에 아래를 넣고 다시 배포합니다.
+가장 쉬운 방법: Vercel 프로젝트 → **Storage → Supabase → Connect**로 연결하면 `POSTGRES_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`가 자동으로 들어갑니다. 그다음 `APP_PASSWORD`만 직접 추가하고 다시 배포합니다.
+
+직접 넣을 때는 Vercel 프로젝트 → Settings → Environment Variables 에 아래를 넣고 다시 배포합니다.
 
 | 이름 | 값 |
 |---|---|
