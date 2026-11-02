@@ -39,7 +39,8 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [hwp, setHwp] = useState(true);
   useEffect(() => {
-    api.get('/api/session').then(setSession);
+    // 서버(API)가 없는 곳(예: Cloudflare 정적 배포)에서는 안내 화면을 보여 준다
+    api.get('/api/session').then(setSession).catch(() => setSession({ offline: true }));
     const onAuth = () => setSession((s) => ({ ...s, ok: false }));
     window.addEventListener('auth-required', onAuth);
     return () => window.removeEventListener('auth-required', onAuth);
@@ -50,6 +51,7 @@ export default function App() {
     api.get('/api/hwp-available').then((r) => setHwp(r.available)).catch(() => setHwp(false));
   }, [session?.ok]);
   if (!session) return <div className="p-10 text-slate-400">불러오는 중…</div>;
+  if (session.offline) return <Offline />;
   if (!session.ok) return <Login onDone={() => setSession({ ...session, ok: true })} />;
   if (!schema) return <div className="p-10 text-slate-400">불러오는 중…</div>;
   const logout = async () => { await api.post('/api/logout'); setSession({ ...session, ok: false }); };
@@ -96,6 +98,23 @@ export default function App() {
         </main>
       </div>
     </SchemaCtx.Provider>
+  );
+}
+
+function Offline() {
+  return (
+    <div className="min-h-screen bg-side flex items-center justify-center p-4">
+      <div className="card w-full max-w-md p-8">
+        <Logo className="text-3xl" />
+        <p className="text-sm font-semibold text-brand-600 mt-2">Consult more, write less<span className="text-accent-500">.</span></p>
+        <h1 className="text-lg font-bold text-slate-900 mt-8">서버에 연결할 수 없습니다</h1>
+        <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+          이 주소에는 ConDesk 화면만 올라가 있고, 데이터를 저장하고 AI를 실행하는 서버는 아직 연결되지 않았습니다.
+          지금은 컨설턴트 PC에서 실행 중인 ConDesk 주소로 접속해 주세요.
+        </p>
+        <button className="btn-outline mt-6" onClick={() => window.location.reload()}>다시 시도</button>
+      </div>
+    </div>
   );
 }
 

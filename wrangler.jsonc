@@ -1,0 +1,11 @@
+// Cloudflare Workers 정적 배포 설정
+// npm run build 로 만든 dist 폴더의 화면(HTML/JS/CSS)을 condesk.<계정>.workers.dev 로 내보낸다.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "condesk",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
