@@ -107,10 +107,9 @@ function Offline() {
       <div className="card w-full max-w-md p-8">
         <Logo className="text-3xl" />
         <p className="text-sm font-semibold text-brand-600 mt-2">Consult more, write less<span className="text-accent-500">.</span></p>
-        <h1 className="text-lg font-bold text-slate-900 mt-8">서버에 연결할 수 없습니다</h1>
+        <h1 className="text-lg font-bold text-slate-900 mt-8">ConDesk 서버가 꺼져 있습니다</h1>
         <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-          이 주소에는 ConDesk 화면만 올라가 있고, 데이터를 저장하고 AI를 실행하는 서버는 아직 연결되지 않았습니다.
-          지금은 컨설턴트 PC에서 실행 중인 ConDesk 주소로 접속해 주세요.
+          데이터와 AI는 컨설턴트 PC의 ConDesk가 처리합니다. PC를 켜고 <b>start-funnel.bat</b>을 실행한 뒤 다시 시도해 주세요.
         </p>
         <button className="btn-outline mt-6" onClick={() => window.location.reload()}>다시 시도</button>
       </div>
